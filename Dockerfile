@@ -2,6 +2,8 @@ FROM ghcr.io/opennmt/ctranslate2:latest-ubuntu20.04-cuda11.2
 
 ENV PYTHON_VERSION=3.10
 
+RUN apt install -y software-properties-common
+
 RUN add-apt-repository ppa:deadsnakes/ppa
 
 RUN apt-get update && apt-get install -y \
