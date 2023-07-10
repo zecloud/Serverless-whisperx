@@ -3,9 +3,9 @@ FROM ghcr.io/opennmt/ctranslate2:latest-ubuntu20.04-cuda11.2
 ENV PYTHON_VERSION=3.10
 
 RUN apt-get update && apt-get install -y \
-     build-essential \
-     gcc \
-     git \
+     #build-essential \
+     #gcc \
+     #git \
      ffmpeg
 
 RUN export DEBIAN_FRONTEND=noninteractive \
