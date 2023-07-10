@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
      #build-essential \
      #gcc \
      #git \
+     curl \
      ffmpeg
 
 RUN export DEBIAN_FRONTEND=noninteractive \
@@ -27,6 +28,8 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 RUN ln -s -f /usr/bin/python${PYTHON_VERSION} /usr/bin/python3 && \
     ln -s -f /usr/bin/python${PYTHON_VERSION} /usr/bin/python && \
     ln -s -f /usr/bin/pip3 /usr/bin/pip
+
+RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10
 
 RUN pip install --upgrade pip
 
