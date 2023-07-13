@@ -37,6 +37,17 @@ RUN pip install torch==2.0.0+cu117 torchvision==0.15.1+cu117 torchaudio==2.0.1+c
 
 RUN pip install git+https://github.com/m-bain/whisperx.git
 
+COPY app.py /home
+
+COPY requirements.txt /home
+
+RUN pip install -r /home/requirements.txt
+
+
+
+
+
+
 
 
 

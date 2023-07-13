@@ -1,0 +1,5 @@
+dapr
+dapr-ext-grpc
+dapr-ext-fastapi
+requests
+Flask
