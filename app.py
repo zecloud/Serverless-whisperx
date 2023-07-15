@@ -24,7 +24,7 @@ def incoming(request: BindingRequest):
     incomingtext = request.text()
     print(">>>>>>>Message Received: "+ incomingtext,flush="true")
     
-    outputfile = "Msg_"+datetime.datetime.now().strftime("%Y%m%d-%H%M%S-%f")+".txt"
+    outputfile = "/outputs/Msg_"+datetime.datetime.now().strftime("%Y%m%d-%H%M%S-%f")+".txt"
     done = process_message(incomingtext,outputfile)
     if done:
         print('>>>>>> Transcribe done.',flush="true")
@@ -36,7 +36,7 @@ def incoming(request: BindingRequest):
         #print(uploadcontents)
         #requests.post(url, data = contents)
             req_data = {"message": "'+ outputfile+ '"} 
-            resp = d.invoke_binding('kafkaBinding', 'create', json.dumps(req_data))
+            resp = d.invoke_binding('queueoutput', 'create', json.dumps(req_data))
             print('>>>>>> Transcribe done.',flush="true")
             d.close()
             d.shutdown()
@@ -81,6 +81,7 @@ def process_message(audio_file,text_file):
     print(result["segments"]) #
     with open(text_file, "w", encoding="utf-8") as f:
         for segment in result["segments"]:
+                #f.writelines(segment["text"].strip())
                 print(segment["text"].strip(), file=f, flush=True)
     return True
 
