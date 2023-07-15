@@ -1,0 +1,18 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: queueinput
+spec:
+  type: bindings.azure.storagequeues
+  version: v1
+  metadata:
+  - name: accountName
+    value: aiavatar
+  - name: accountKey
+    secretKeyRef:
+      name: aiavatar-storage-secret
+      key: azurestorageaccountkey
+  - name: queueName
+    value: "whisperx"
+  - name: pollingInterval
+    value: "5s"

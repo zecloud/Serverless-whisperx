@@ -1,0 +1,91 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledJob
+metadata:
+  name: whisperx-consumer
+  namespace: default
+spec:
+  jobTargetRef:
+    template:
+      metadata:
+        annotations:
+          dapr.io/enabled: "true"
+          dapr.io/app-id: "whisperxjob"
+          dapr.io/app-protocol: "grpc"
+          dapr.io/app-port: "50051"
+      spec:
+        containers:
+        - name: whisperx
+          image: zecloud.azurecr.io/whisperx:latest
+          imagePullPolicy: Always
+          env:
+           - name: 'HOME'
+             value: '/cache'
+           - name: 'TRANSFORMERS_CACHE'
+             value: '/home/models/transformers'
+           - name: 'HF_HOME'
+             value: '/home/models/diffusers'
+           - name: 'YOUR_HF_TOKEN'
+             valueFrom:
+              secretKeyRef:
+                name: hftoken-secret
+                key: HfToken
+           - name: aiavatarconnstring
+             valueFrom:
+              secretKeyRef:
+                name: aiavatar-connstr-secret
+                key: ConnectionString
+          #command: ["python","app.py","curl -X POST localhost:3500/v1.0/shutdown"]
+          #envFrom:
+          #  - secretRef:
+          #      name: aiavatar-storage-secret
+          resources:
+            limits:
+            nvidia.com/gpu: 1
+          volumeMounts:
+          - name: cachemodels
+            mountPath: /cache
+          - name: outputs
+            mountPath: /outputs
+        restartPolicy: Never
+        tolerations:
+        - key: "sku"
+          operator: "Equal"
+          value: "gpu"
+          effect: "NoSchedule"
+        volumes:
+        - name: cachemodels
+          azureFile:
+            secretName: aiavatar-storage-secret
+            shareName: models
+            readOnly: false
+        - name: outputs
+          azureFile:
+            secretName: aiavatar-storage-secret
+            shareName: diffusersoutput
+            readOnly: false
+    backoffLimit: 4 
+    parallelism: 1              # Optional. Max number of desired instances ([docs](https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/#controlling-parallelism))
+    completions: 1              # Optional. Desired number of successfully finished instances ([docs](https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/#controlling-parallelism))
+  pollingInterval: 5   # Optional. Default: 30 seconds
+  #cooldownPeriod: 30   # Optional. Default: 300 seconds
+  maxReplicaCount: 30  # Optional. Default: 100
+  triggers:
+  - type: azure-queue
+    metadata:
+      queueName: whisperx
+      #queueLength: '1'
+      #activationQueueLength: '50'
+      #connectionFromEnv: aiavatarconnstring
+      accountName: aiavatar
+    authenticationRef:
+      name: azure-queue-auth
+---
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: azure-queue-auth
+spec:
+  secretTargetRef:
+  - parameter: connection
+    name: aiavatar-connstr-secret
+    key: ConnectionString
