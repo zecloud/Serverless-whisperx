@@ -35,11 +35,12 @@ def incoming(request: BindingRequest):
         #contents = '{ "operation": "create", "data": {"message": "'+ outputfile+ '"} }'
         #print(uploadcontents)
         #requests.post(url, data = contents)
-            req_data = {"message": "'+ outputfile+ '"} 
-            resp = d.invoke_binding('queueoutput', 'create', json.dumps(req_data))
+            #req_data = {"message": "'+ outputfile+ '"} 
+            resp = d.invoke_binding('queueoutput', 'create', json.dumps(outputfile))
             print('>>>>>> Transcribe done.',flush=True)
             d.close()
-            d.shutdown()
+            app.stop()
+            #d.shutdown()
 
     return "Incoming message successfully processed!"
 
@@ -87,4 +88,6 @@ def process_message(audio_file,text_file):
 
 if __name__ == '__main__':
     app.run(daprGRPCPort)
+    with DaprClient() as d:
+        d.shutdown()
     #app.run(host="localhost", port=6000, debug=False)
