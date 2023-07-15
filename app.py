@@ -21,7 +21,7 @@ app = App()
 @app.binding('queueinput')
 def incoming(request: BindingRequest):
     #incomingtext = request.get_data().decode()
-    incomingtext = request.text()
+    incomingtext = base64.b64decode(request.text()).decode('utf-8')
     print(">>>>>>>Message Received: "+ incomingtext,flush=True)
     
     outputfile = "/outputs/Msg_"+datetime.datetime.now().strftime("%Y%m%d-%H%M%S-%f")+".txt"
