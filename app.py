@@ -87,7 +87,7 @@ def process_message(audio_file,text_file):
     return True
 
 if __name__ == '__main__':
-    app.run(daprGRPCPort)
+    app.run(50051)
     with DaprClient() as d:
         d.shutdown()
     #app.run(host="localhost", port=6000, debug=False)
