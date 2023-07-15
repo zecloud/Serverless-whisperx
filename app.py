@@ -14,20 +14,20 @@ app = Flask(__name__) """
 daprPort = os.getenv('DAPR_HTTP_PORT')
 daprGRPCPort = os.environ.get('DAPR_GRPC_PORT')
 hftoken = os.environ.get('YOUR_HF_TOKEN')
-print('>>>>>>>>DAPR_HTTP_PORT : '+ daprPort )
-print('>>>>>>>>DAPR_GRPC_PORT : '+ daprGRPCPort )
+#print('>>>>>>>>DAPR_HTTP_PORT : '+ daprPort )
+#print('>>>>>>>>DAPR_GRPC_PORT : '+ daprGRPCPort )
 app = App()
 #@app.route("/queueinput", methods=['POST'])
 @app.binding('queueinput')
 def incoming(request: BindingRequest):
     #incomingtext = request.get_data().decode()
     incomingtext = request.text()
-    print(">>>>>>>Message Received: "+ incomingtext,flush="true")
+    print(">>>>>>>Message Received: "+ incomingtext,flush=True)
     
     outputfile = "/outputs/Msg_"+datetime.datetime.now().strftime("%Y%m%d-%H%M%S-%f")+".txt"
     done = process_message(incomingtext,outputfile)
     if done:
-        print('>>>>>> Transcribe done.',flush="true")
+        print('>>>>>> Transcribe done.',flush=True)
         with DaprClient() as d:
              
         
@@ -37,7 +37,7 @@ def incoming(request: BindingRequest):
         #requests.post(url, data = contents)
             req_data = {"message": "'+ outputfile+ '"} 
             resp = d.invoke_binding('queueoutput', 'create', json.dumps(req_data))
-            print('>>>>>> Transcribe done.',flush="true")
+            print('>>>>>> Transcribe done.',flush=True)
             d.close()
             d.shutdown()
 
