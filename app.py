@@ -84,6 +84,7 @@ def process_message(audio_file,text_file):
         for segment in result["segments"]:
                 #f.writelines(segment["text"].strip())
                 print(segment["text"].strip(), file=f, flush=True)
+                print(segment["speaker"].strip(), file=f, flush=True)
     return True
 
 if __name__ == '__main__':
