@@ -51,12 +51,13 @@ def process_message(audio_file,text_file):
     #audio_file = "audio.mp3"
     batch_size = 16 # reduce if low on GPU mem
     compute_type = "float16" # change to "int8" if low on GPU mem (may reduce accuracy)
-    result = ffmpeg.input(audio_file).output("audio.wav", format="s16le", acodec="pcm_s16le", ac=1).run()
-    audio_file = "audio.wav"
+    newaudio_file = "/outputs/tempresult.wav"
+    result = ffmpeg.input(audio_file).output(newaudio_file).run()
+    audio_file = newaudio_file
     # 1. Transcribe with original whisper (batched)
     model = whisperx.load_model("large-v2", device, compute_type=compute_type)
 
-    audio = whisperx.load_audio("audio.wav")
+    audio = whisperx.load_audio(audio_file)
     result = model.transcribe(audio, batch_size=batch_size)
     print(result["segments"]) # before alignment
 
