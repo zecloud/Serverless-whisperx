@@ -8,6 +8,7 @@ import whisperx
 import json
 import ffmpeg
 from dapr.clients import DaprClient
+import tempfile
 """ from flask import Flask,request
 app = Flask(__name__) """
 
@@ -24,9 +25,14 @@ def incoming(request: BindingRequest):
     #incomingtext = request.get_data().decode()
     incomingtext = base64.b64decode(request.text()).decode('utf-8')
     print(">>>>>>>Message Received: "+ incomingtext,flush=True)
-    
-    outputfile = "/outputs/Msg_"+datetime.datetime.now().strftime("%Y%m%d-%H%M%S-%f")+".txt"
-    done = process_message(incomingtext,outputfile)
+    with tempfile.NamedTemporaryFile(delete=True) as temp_file:
+        #newaudio_file = "/outputs/tempresult.wav"
+        try:
+            result = ffmpeg.option("y").input(incomingtext).output(temp_file.name).run(capture_stdout=True, capture_stderr=True)
+        except ffmpeg.Error as e:
+            raise RuntimeError(f"Failed to load audio: {e.stderr.decode()}") from e
+        outputfile = "/outputs/Msg_"+datetime.datetime.now().strftime("%Y%m%d-%H%M%S-%f")+".txt"
+        done = process_message(temp_file.name,outputfile)
     if done:
         print('>>>>>> Transcribe done.',flush=True)
         with DaprClient() as d:
@@ -51,9 +57,6 @@ def process_message(audio_file,text_file):
     #audio_file = "audio.mp3"
     batch_size = 16 # reduce if low on GPU mem
     compute_type = "float16" # change to "int8" if low on GPU mem (may reduce accuracy)
-    newaudio_file = "/outputs/tempresult.wav"
-    result = ffmpeg.input(audio_file).output(newaudio_file).run()
-    audio_file = newaudio_file
     # 1. Transcribe with original whisper (batched)
     model = whisperx.load_model("large-v2", device, compute_type=compute_type)
 
