@@ -18,12 +18,14 @@ spec:
           image: zecloud.azurecr.io/whisperx:latest
           imagePullPolicy: Always
           env:
+           - name: 'TORCH_HOME'
+             value: '/cache/whisperx'
            - name: 'HOME'
              value: '/cache'
            - name: 'TRANSFORMERS_CACHE'
-             value: '/home/models/transformers'
+             value: '/cache/transformers'
            - name: 'HF_HOME'
-             value: '/home/models/diffusers'
+             value: '/cache/whisperx'
            - name: 'YOUR_HF_TOKEN'
              valueFrom:
               secretKeyRef:
