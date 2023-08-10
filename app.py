@@ -26,7 +26,7 @@ def incoming(request: BindingRequest):
     incomingtext = base64.b64decode(request.text()).decode('utf-8')
     print(">>>>>>>Message Received: "+ incomingtext,flush=True)
     done = False
-    with tempfile.NamedTemporaryFile(suffix=".wav",delete=True) as temp_file:
+    with tempfile.NamedTemporaryFile(prefix="/outputs/tmp/",suffix=".wav",delete=True) as temp_file:
         #newaudio_file = "/outputs/tempresult.wav"
         try:
             result = ffmpeg.input(incomingtext).output(temp_file.name).run(capture_stdout=True, capture_stderr=True,overwrite_output=True)
