@@ -25,7 +25,8 @@ def incoming(request: BindingRequest):
     #incomingtext = request.get_data().decode()
     incomingtext = base64.b64decode(request.text()).decode('utf-8')
     print(">>>>>>>Message Received: "+ incomingtext,flush=True)
-    with tempfile.NamedTemporaryFile(delete=True) as temp_file:
+    done = False
+    with tempfile.NamedTemporaryFile(suffix=".wav",delete=True) as temp_file:
         #newaudio_file = "/outputs/tempresult.wav"
         try:
             result = ffmpeg.input(incomingtext).output(temp_file.name).run(capture_stdout=True, capture_stderr=True,overwrite_output=True)
@@ -48,7 +49,8 @@ def incoming(request: BindingRequest):
             d.close()
             app.stop()
             #d.shutdown()
-
+    else: 
+        return "Error processing message!"
     return "Incoming message successfully processed!"
 
 def process_message(audio_file,text_file):
