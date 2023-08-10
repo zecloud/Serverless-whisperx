@@ -28,7 +28,7 @@ def incoming(request: BindingRequest):
     with tempfile.NamedTemporaryFile(delete=True) as temp_file:
         #newaudio_file = "/outputs/tempresult.wav"
         try:
-            result = ffmpeg.option("y").input(incomingtext).output(temp_file.name).run(capture_stdout=True, capture_stderr=True)
+            result = ffmpeg.input(incomingtext).output(temp_file.name).run(capture_stdout=True, capture_stderr=True,overwrite_output=True)
         except ffmpeg.Error as e:
             raise RuntimeError(f"Failed to load audio: {e.stderr.decode()}") from e
         outputfile = "/outputs/Msg_"+datetime.datetime.now().strftime("%Y%m%d-%H%M%S-%f")+".txt"
