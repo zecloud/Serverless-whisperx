@@ -13,6 +13,8 @@ spec:
       name: aiavatar-storage-secret
       key: azurestorageaccountkey
   - name: queueName
-    value: "semantickernelqueue"
-  - name: pollingInterval
-    value: "5s"
+    value: "whispered"
+  - name: encodeBase64
+    value: "true"
+  - name: direction
+    value: "output"
