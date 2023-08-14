@@ -43,14 +43,15 @@ def incoming(request: BindingRequest):
         #contents = '{ "operation": "create", "data": {"message": "'+ outputfile+ '"} }'
         #print(uploadcontents)
         #requests.post(url, data = contents)
-            #req_data = {"message": "'+ outputfile+ '"} 
-            resp = d.invoke_binding('queueoutput', 'create', json.dumps(outputfile))
-            respredis = d.publish_event(
-                pubsub_name='pubsub',
-                topic_name='whispered',
-                data=json.dumps(outputfile),
-                data_content_type='application/json',
-            )
+            req_data = {'message':  outputfile} 
+
+            resp = d.invoke_binding('queueoutput', 'create', json.dumps(req_data))
+            # respredis = d.publish_event(
+            #     pubsub_name='pubsub',
+            #     topic_name='whispered',
+            #     data=json.dumps(req_data),
+            #     data_content_type='application/json',
+            # )
             print('>>>>>> Transcribe done.',flush=True)
             d.close()
             app.stop()
