@@ -16,3 +16,5 @@ spec:
     value: "whisperx"
   - name: pollingInterval
     value: "5s"
+scopes:
+- whisperxjob
